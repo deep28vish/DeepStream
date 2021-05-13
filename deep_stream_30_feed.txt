@@ -16,7 +16,7 @@ nvbuf-memory-type=0
 enable=1
 type=3
 uri=file://crowd3.mp4
-num-sources=15
+num-sources=10
 gpu-id=0
 nvbuf-memory-type=0
 cudadec-memtype=0
@@ -25,7 +25,16 @@ cudadec-memtype=0
 enable=1
 type=3
 uri=file://traffic_4k_edited_2.mp4
-num-sources=15
+num-sources=10
+gpu-id=0
+nvbuf-memory-type=0
+cudadec-memtype=0
+########################################################################################
+[source2]
+enable=1
+type=3
+uri=file://traffic_cam_clear_edited_1.mp4
+num-sources=10
 gpu-id=0
 nvbuf-memory-type=0
 cudadec-memtype=0

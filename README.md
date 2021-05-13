@@ -167,7 +167,9 @@ root@kuk:/home# ls
 Primary_Detector  README.md  config_infer_primary.txt  crowd3.mp4  deep_stream_1_feed.txt  deep_stream_30_feed.txt  deep_stream_40_feed.txt  tracker_so  traffic_4k_edited_2.mp4
 ```
 In the above snippet, we got inside our container named Thor, and went to our mounted(git cloned) folder which is present at home.
-#### Actually running the INFERENCE ENGINE
+#### Actually running the INFERENCE ENGINE 
+Running Detection + tracking on 1 stream.
+
 ```
 deepstream-app -c deep_stream_1_feed.txt --tiledtext
 ```
@@ -218,15 +220,92 @@ KLT Tracker Init
 **PERF:  60.31 (60.19)	
 
 ```
+#### Screenshot for running Inf on 1 stream
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/ds_1_str_det_trck.png?raw=true)
+
+#### Running Detection + tracking + claasification 1 + classification2 + classification 3 on 1 stream
+
+Detection - Car,Bicycle,Person,Roadsign
+Tracking -  MOT
+Classificaiton 1 - on CAR - COLOR CLASSIFICATION
+Classification 2 - on CAR - MAKE OF CAR
+Classification 3 - on CAR - Type of Vehicle
+
+Result can be expected as - White Honda Sedan, Black Ford SUV..
+
+```
+deepstream-app -c deep_stream_1_feed_3_classification.txt --tiledtext
+```
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/DS_1_feed_1_det_trck_3_class.png?raw=true)
+
 
 #### Similarly there is preconfigured text file for running 30 and 40 streams
 ```
 deepstream-app -c deep_stream_30_feed.txt
+```
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/ds_30_str_det_trck.png?raw=true)
 
+```
 deepstream-app -c deep_stream_40_feed.txt
 ```
 
-![preview image](https://github.com/deep28vish/DeepStream/blob/main/screen_image.png?raw=true)
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/ds_40_str_det.png?raw=true)
 
+
+## GSTREAMER COMMAND
+All the config files used above translates our blocks to GST pipeline which along with NVIDIA-plugins produces such results. You can read more about it in the [Medium blog]()
+
+Here is the straight away GST pipline with nvidia plugins for detection and tracking on 1 stream.(run it inside the home folder, where all other files are)
+
+```
+gst-launch-1.0 filesrc location=traffic_cam_clear_edited_1.mp4 ! decodebin ! m.sink_0 nvstreammux name=m batch-size=1 width=1280 height=720 live-source=1 ! nvinfer config-file-path=$(pwd)/config_infer_primary.txt batch-size=1 unique-id=1 ! nvtracker ll-lib-file=$(pwd)/tracker_so/libnvds_mot_klt.so display-tracking-id=1 ! nvinfer config-file-path= $(pwd)/config_infer_secondary_carmake.txt batch-size=1 unique-id=2 infer-on-gie-id=1 infer-on-class-ids=0 ! nvvideoconvert ! nvdsosd ! nveglglessink sync=0
+```
+
+#### Some useful Docker commands
+To exit the container:
+```
+exit
+```
+To stop the container 
+```
+sudo docker stop Thor
+```
+To start the container 
+```
+sudo docker start Thor
+```
+No need to make same container again and agin, you can simply use the one you made until you messed up something.
+
+To run NVIDIA-DEEPSTRAM samples:
+```
+root@kuk:/home# cd /
+
+root@kuk:/# cd opt/nvidia/deepstream/deepstream-5.1/
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1# ls
+LICENSE.txt  LicenseAgreement.pdf  README  README.rhel  bin  entrypoint.sh  install.sh  lib  samples  sources  uninstall.sh  version
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1# cd samples/
+configs/                              prepare_classification_test_video.sh  streams/                              
+models/                               prepare_ds_trtis_model_repo.sh        trtis_model_repo/                     
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1# cd samples/configs/
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1/samples/configs# ls
+deepstream-app  deepstream-app-trtis  tlt_pretrained_models
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1/samples/configs# cd deepstream-app  
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1/samples/configs/deepstream-app# ls
+config_infer_primary.txt             config_infer_secondary_carmake.txt       iou_config.txt                                                      source4_1080p_dec_infer-resnet_tracker_sgie_tiled_display_int8_gpu1.txt
+config_infer_primary_endv.txt        config_infer_secondary_vehicletypes.txt  source1_usb_dec_infer_resnet_int8.txt                               tracker_config.yml
+config_infer_primary_nano.txt        config_mux_source30.txt                  source30_1080p_dec_infer-resnet_tiled_display_int8.txt
+config_infer_secondary_carcolor.txt  config_mux_source4.txt                   source4_1080p_dec_infer-resnet_tracker_sgie_tiled_display_int8.txt
+
+
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1/samples/configs/deepstream-app# deepstream-app -c source4_1080p_dec_infer-resnet_tracker_sgie_tiled_display_int8.txt
+```
+
+You can learn a whole lot from these samples and try modifing your config file by yourself.
 
 
