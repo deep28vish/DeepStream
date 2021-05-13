@@ -92,7 +92,7 @@ sudo apt-get install -y nvidia-docker2
 sudo systemctl restart docker
 
 ```
-#### To confirm Nvidi-Docker Installation:
+#### To confirm Nvidia-Docker Installation:
 ```
 kuk@kuk:~$ sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 [sudo] password for kuk: 
