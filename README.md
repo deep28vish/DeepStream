@@ -5,6 +5,7 @@ This repository is isolated files from DEEPSTREAM SDK- 5.1
 these files when mounted inside NVIDIA-DOCKER- deepstream:5.0.1-20.09-triton. - ```docker pull nvcr.io/nvidia/deepstream:5.1-21.02-triton```
 can be used for running inference on 30+ videos in real time.
 Minimum Requirement:
+* Ubuntu- OS
 * NVIDIA- GRAPHICS DRIVER 440+
 * CUDA - 10.2+
 * NVIDIA - GPU - GTX, RTX, Pascal, Ampere - 4 Gb minimum
