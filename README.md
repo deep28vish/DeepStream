@@ -225,6 +225,7 @@ deepstream-app -c deep_stream_30_feed.txt
 deepstream-app -c deep_stream_40_feed.txt
 ```
 
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/screen_image.png?raw=true)
 
 
 
