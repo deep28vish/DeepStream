@@ -128,10 +128,104 @@ Thu May 13 05:27:44 2021
 ```
 
 
+## Working with DEEPSTREM - NVIDIA-DOCKER
+Downloading the git repo- [Deep28Vish](https://github.com/deep28vish/DeepStream)
+
+Download Location - /Documents/
+```
+kuk@kuk:~/Documents$ git clone https://github.com/deep28vish/DeepStream.git
+Cloning into 'DeepStream'...
+remote: Enumerating objects: 25, done.
+remote: Counting objects: 100% (25/25), done.
+remote: Compressing objects: 100% (15/15), done.
+remote: Total 25 (delta 9), reused 25 (delta 9), pack-reused 0
+Unpacking objects: 100% (25/25), done.
+```
+
+#### Downloading and Making DEEPSTREAM container
+```
+sudo docker run --runtime=nvidia -it -d -e DISPLAY=$DISPLAY --name Thor -v $HOME/Documents/DeepStream/:/home/ --net=host nvcr.io/nvidia/deepstream:5.1-21.02-triton
+```
+This will output a string looking like:
+````
+kuk@kuk:~/Documents$ sudo docker run --runtime=nvidia -it -d -e DISPLAY=$DISPLAY --name Thor -v $HOME/Documents/DeepStream/:/home/ --net=host nvcr.io/nvidia/deepstream:5.1-21.02-triton
+[sudo] password for kuk: 
+d0b4f57b929575a9a43f11955f14010eb84410e325f007fe9ecc69b3e3db5476
+````
+Container , our sandbox is ready. Going Inside sand box:
+```
+kuk@kuk:~/Documents$ xhost +
+access control disabled, clients can connect from any host
+```
+TO ENABLE THE VIDEO OUTPUT, REMEMBER TO RUN THIS EVERYTIME YOU ENTER THE CONTAINER.
+```
+kuk@kuk:~/Documents$ sudo docker exec -it Thor bash
+root@kuk:/opt/nvidia/deepstream/deepstream-5.1# cd /
+root@kuk:/# cd home/
+root@kuk:/home# ls
+Primary_Detector  README.md  config_infer_primary.txt  crowd3.mp4  deep_stream_1_feed.txt  deep_stream_30_feed.txt  deep_stream_40_feed.txt  tracker_so  traffic_4k_edited_2.mp4
+```
+In the above snippet, we got inside our container named Thor, and went to our mounted(git cloned) folder which is present at home.
+#### Actually running the INFERENCE ENGINE
+```
+deepstream-app -c deep_stream_1_feed.txt --tiledtext
+```
+
+```
+root@kuk:/home# deepstream-app -c deep_stream_1_feed.txt 
+** WARN: <parse_osd:946>: Unknown key 'border-color' for group [osd]
+
+ *** DeepStream: Launched RTSP Streaming at rtsp://localhost:8556/ds-test ***
+
+gstnvtracker: Loading low-level lib at /home/tracker_so/libnvds_mot_klt.so
+gstnvtracker: Optional NvMOT_ProcessPast not implemented
+gstnvtracker: Optional NvMOT_RemoveStreams not implemented
+gstnvtracker: Batch processing is OFF
+gstnvtracker: Past frame output is OFF
+0:00:10.464814015   193 0x7ff95c0022a0 INFO                 nvinfer gstnvinfer.cpp:619:gst_nvinfer_logger:<primary_gie> NvDsInferContext[UID 1]: Info from NvDsInferContextImpl::deserializeEngineAndBackend() <nvdsinfer_context_impl.cpp:1702> [UID = 1]: deserialized trt engine from :/home/Primary_Detector/resnet10.caffemodel_b1_gpu0_int8.engine
+INFO: ../nvdsinfer/nvdsinfer_model_builder.cpp:685 [Implicit Engine Info]: layers num: 3
+0   INPUT  kFLOAT input_1         3x368x640       
+1   OUTPUT kFLOAT conv2d_bbox     16x23x40        
+2   OUTPUT kFLOAT conv2d_cov/Sigmoid 4x23x40         
+
+0:00:10.464873182   193 0x7ff95c0022a0 INFO                 nvinfer gstnvinfer.cpp:619:gst_nvinfer_logger:<primary_gie> NvDsInferContext[UID 1]: Info from NvDsInferContextImpl::generateBackendContext() <nvdsinfer_context_impl.cpp:1806> [UID = 1]: Use deserialized engine model: /home/Primary_Detector/resnet10.caffemodel_b1_gpu0_int8.engine
+0:00:10.465616239   193 0x7ff95c0022a0 INFO                 nvinfer gstnvinfer_impl.cpp:313:notifyLoadModelStatus:<primary_gie> [UID 1]: Load new model:/home/config_infer_primary.txt sucessfully
+
+Runtime commands:
+	h: Print this help
+	q: Quit
+
+	p: Pause
+	r: Resume
+
+NOTE: To expand a source in the 2D tiled display and view object details, left-click on the source.
+      To go back to the tiled display, right-click anywhere on the window.
+
+
+**PERF:  FPS 0 (Avg)	
+**PERF:  0.00 (0.00)	
+** INFO: <bus_callback:181>: Pipeline ready
+
+** INFO: <bus_callback:167>: Pipeline running
+
+KLT Tracker: Expect numTransforms config of 1, got 4
+KLT Tracker: Ignoring additional transforms but performance may be slower.
+KLT Tracker Init
+**PERF:  60.52 (60.39)	
+**PERF:  59.81 (60.09)	
+**PERF:  60.20 (60.06)	
+**PERF:  60.31 (60.19)	
+
+```
+
+#### Similarly there is preconfigured text file for running 30 and 40 streams
+```
+deepstream-app -c deep_stream_30_feed.txt
+
+deepstream-app -c deep_stream_40_feed.txt
+```
+
+![preview image](https://github.com/deep28vish/DeepStream/blob/main/screen_image.png?raw=true)
 
 
 
-
-## Installation
-Use the package manager [pip](https://pip.pypa.io/en/stable/)
-[MIT](https://choosealicense.com/licenses/mit/)
