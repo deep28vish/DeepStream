@@ -1,5 +1,5 @@
 # Computer Vision using DEEPSTREAM
-For complete guide visit- [Computer Vsion In production].
+For complete guide visit- [Computer Vsion In production](https://vdeepvision.medium.com/computer-vision-ai-in-production-using-nvida-deepstream-6c90d3daa8a5).
 
 This repository is isolated files from DEEPSTREAM SDK- 5.1
 these files when mounted inside NVIDIA-DOCKER- deepstream:5.0.1-20.09-triton. - ```docker pull nvcr.io/nvidia/deepstream:5.1-21.02-triton```
